@@ -170,3 +170,6 @@ Thumbs.db
 
 # Node modules in checkpoints
 checkpoints/**/node_modules/
+
+# C# Dev Kit / Roslyn language server project cache
+*.csproj.lscache
