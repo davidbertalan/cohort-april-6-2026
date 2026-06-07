@@ -1,6 +1,7 @@
 using BudgetTracker.Api.AntiForgery;
 using BudgetTracker.Api.Auth;
 using BudgetTracker.Api.Features.Transactions;
+using BudgetTracker.Api.Features.Transactions.Import.Processing;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Api.Infrastructure;
 
@@ -37,6 +38,9 @@ builder.Services.AddSwaggerGen(c =>
 // Add Entity Framework
 builder.Services.AddDbContext<BudgetTrackerContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add CSV Import Service
+builder.Services.AddScoped<CsvImporter>();
 
 // Add Auth with multiple schemes
 builder.Services.AddAuthorization(options =>

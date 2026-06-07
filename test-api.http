@@ -21,3 +21,33 @@ Content-Type: text/csv
 
 < ./samples/generic-bank-sample.csv
 --WebAppBoundary--
+
+### Test Complete Import with Sample CSV
+POST http://localhost:5295/api/transactions/import
+X-API-Key: test-key-user1
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="account"
+
+Checking Account
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="generic-bank-sample.csv"
+Content-Type: text/csv
+
+Date,Description,Amount,Balance
+01/15/2025,Amazon Purchase,-45.67,1250.33
+01/16/2025,Coffee Shop,-5.89,1244.44
+01/17/2025,Salary Deposit,2500.00,3744.44
+01/18/2025,Netflix Subscription,-15.99,3728.45
+01/19/2025,Gas Station,-52.30,3676.15
+01/20/2025,Grocery Store,-89.45,3586.70
+01/21/2025,Uber Ride,-12.50,3574.20
+01/22/2025,Apple Services,-2.99,3571.21
+01/23/2025,Cash Withdrawal,-60.00,3511.21
+01/24/2025,Music Streaming,-9.99,3501.22
+--WebAppBoundary--
+
+### Test Transaction List After Import
+GET http://localhost:5295/api/transactions
+X-API-Key: test-key-user1
