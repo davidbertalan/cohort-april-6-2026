@@ -1,9 +1,12 @@
+using Azure.AI.OpenAI;
 using BudgetTracker.Api.AntiForgery;
 using BudgetTracker.Api.Auth;
 using BudgetTracker.Api.Features.Transactions;
 using BudgetTracker.Api.Features.Transactions.Import.Processing;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Api.Infrastructure;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +44,28 @@ builder.Services.AddDbContext<BudgetTrackerContext>(options =>
 
 // Add CSV Import Service
 builder.Services.AddScoped<CsvImporter>();
+
+// Configure Azure AI
+builder.Services.Configure<AzureAiConfiguration>(
+    builder.Configuration.GetSection(AzureAiConfiguration.SectionName));
+
+// Register IChatClient for Azure OpenAI
+builder.Services.AddSingleton<IChatClient>(sp =>
+{
+    var config = sp.GetRequiredService<IOptions<AzureAiConfiguration>>().Value;
+
+    if (string.IsNullOrEmpty(config.Endpoint) || string.IsNullOrEmpty(config.ApiKey))
+    {
+        throw new InvalidOperationException(
+            "Azure AI configuration is missing. Please configure Endpoint and ApiKey in user secrets.");
+    }
+
+    return new AzureOpenAIClient(
+        new Uri(config.Endpoint),
+        new System.ClientModel.ApiKeyCredential(config.ApiKey))
+        .GetChatClient(config.DeploymentName)
+        .AsIChatClient();
+});
 
 // Add Auth with multiple schemes
 builder.Services.AddAuthorization(options =>
